@@ -1,9 +1,14 @@
 {
   "dependencies": {
     "chevrotain": "^11.0.3",
+    "regexpp": "^3.2.0",
+    "regulex": "^0.0.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vite-node": "^3.1.1",
     "vitest": "^3.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1"
   }
 }
