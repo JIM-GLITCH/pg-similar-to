@@ -1,5 +1,5 @@
-import { BaseRegExpVisitor, IRegExpAST, RegExpAstPart, RegExpPattern, RegExpFlags, Disjunction, Alternative, Assertion, Character, Set, Group, GroupBackReference, Quantifier } from "@chevrotain/regexp-to-ast";
-import {isDeepStrictEqual} from "util"
+import { Range, BaseRegExpVisitor, IRegExpAST, RegExpAstPart, RegExpPattern, RegExpFlags, Disjunction, Alternative, Assertion, Character, Set, Group, GroupBackReference, Quantifier } from "@chevrotain/regexp-to-ast";
+import { matches } from "lodash-es"
 export class RegExpGenerator implements BaseRegExpVisitor {
     visitChildren(node: IRegExpAST): void {
         for (const key in node) {
@@ -76,7 +76,7 @@ export class RegExpGenerator implements BaseRegExpVisitor {
     }
     visitDisjunction(node: Disjunction): string {
         const parts = node.value.map(x => this.visit(x));
-        return `(?:${parts.join("|")})`;
+        return `${parts.join("|")}`;
     }
     visitAlternative(node: Alternative): string {
         const parts = node.value.map(x => this.visit(x));
@@ -121,16 +121,43 @@ export class RegExpGenerator implements BaseRegExpVisitor {
 
     }
     visitSet(node: Set): string {
+        if (matches<Partial<Set>>({
+            type: "Set",
+            complement: true,
+            value: [cc("\n"), cc("\r"), cc("\u2028"), cc("\u2029")],
+            quantifier: {
+                type: "Quantifier",
+                atLeast: 0,
+                atMost: Infinity,
+                greedy: false,
+            } as Quantifier
+        })(node)) {
+            return '.*'
+        }
         const quantifier = this.tryVisitQuatifier(node.quantifier);
-        
-        const parts = node.value.map(x => {
-            if (typeof x === "number") {
-                return String.fromCodePoint(x);
-            } else {
-                return `${String.fromCodePoint(x.from)}-${String.fromCodePoint(x.to)}`;
-            }
-        });
-        const content = parts.join("");
+
+        let content = ""
+
+        if (matches<Partial<Set>>({
+            type: "Set",
+            complement: true,
+            value: [cc("\n"), cc("\r"), cc("\u2028"), cc("\u2029")],
+        })(node)) {
+            return `.${quantifier}`
+        } else {
+            const parts = node.value.map(x => {
+                if (typeof x === "number") {
+                    return String.fromCodePoint(x);
+                } else {
+                    return `${String.fromCodePoint(x.from)}-${String.fromCodePoint(x.to)}`;
+                }
+            });
+            content = parts.join("");
+        }
+
+
+
+
         if (node.complement == true) {
             return `[^${content}]${quantifier}`;
         } else {
@@ -179,3 +206,11 @@ export class RegExpGenerator implements BaseRegExpVisitor {
     }
 
 }
+function cc(char: string): number | Range {
+    const num = char.codePointAt(0)
+    if (num === undefined) {
+        throw Error(`${char} codepoint is undefined`)
+    }
+    return num
+}
+
