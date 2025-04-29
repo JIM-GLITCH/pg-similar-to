@@ -175,10 +175,10 @@ export class RegExpGenerator implements BaseRegExpVisitor {
     visitQuantifier(Node: Quantifier): string {
         let res = ""
         const { atLeast, atMost, greedy } = Node;
-        if (atLeast === 0 && atMost === undefined) {
+        if (atLeast === 0 && atMost === Infinity) {
             res = "*";
         }
-        else if (atLeast === 1 && atMost === undefined) {
+        else if (atLeast === 1 && atMost === Infinity) {
             res = "+";
         }
         else if (atLeast === 0 && atMost === 1) {
