@@ -6,7 +6,7 @@ export default defineConfig({
     entry: ["./index.ts"],
     format: [ "cjs"],
     legacyOutput: true,
-    outDir: "pg-similar-to",
+    outDir: "dist",
     sourcemap: true,
     external:[]
 });

@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "chevrotain": "^11.0.3",
+    "@chevrotain/regexp-to-ast": "^11.0.3",
+    "lodash-es": "^4.17.21",
     "regexpp": "^3.2.0",
     "regulex": "^0.0.5",
     "ts-node": "^10.9.2",
