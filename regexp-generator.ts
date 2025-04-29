@@ -101,21 +101,7 @@ export class RegExpGenerator implements BaseRegExpVisitor {
         throw new Error("Method not implemented.");
     }
     visitCharacter(node: Character): string {
-        // https://www.postgresql.org/docs/current/functions-matching.html#:~:text=Like%20LIKE%2C%20the,POSIX%20regular%20expressions).
-        function transformCharacter(c: string) {
-            if (c === "_") {
-                return '.';
-            }
-            if (c === "%") {
-                return '.*';
-            }
-            if (c === '.') {
-                return String.raw`\.`;
-            }
-            return c;
-        }
-        let c = transformCharacter(String.fromCodePoint(node.value));
-
+        let c = String.fromCodePoint(node.value);
         const quantifier = this.tryVisitQuatifier(node.quantifier);
         return `${c}${quantifier}`;
 

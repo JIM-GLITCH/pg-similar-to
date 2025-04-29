@@ -1,4 +1,3 @@
-import { Atom, RegExpParser } from "@chevrotain/regexp-to-ast"
 import { SimilarToPatternParser } from "./similar-to-regexp-parser"
 import { RegExpGenerator } from "./regexp-generator"
 
